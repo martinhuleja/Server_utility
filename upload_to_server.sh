@@ -103,9 +103,35 @@ validate_input() {
   fi
 }
 
+execute_upload() {
+  local target="$LOGIN@$SERVER"
+
+  printf "Connecting to %s as %s and creating directory.\n" "$SERVER" "$LOGIN"
+
+  # Create folder
+  ssh "$target" "mkdir -p $DST_PATH"
+  if [ $? -ne 0 ]; then
+    printf "Error: Failed to create directory on the remote server.\n" >&2
+    exit 1
+  fi
+
+  printf "Directory %s created.\n" "$DST_PATH"
+  printf "Transfering data.\n\n"
+
+  # Transfer data
+  scp -r "$SRC_PATH" "${target}:${DST_PATH}/"
+  if [ $? -ne 0 ]; then
+    printf "Error: Data transefer failed.\n" >&2
+    exit 1
+  fi
+
+  printf "\nSuccessfully uploaded to: %s@%s: %s\n" "$LOGIN" "$SERVER" "$DST_PATH"
+}
+
 main() {
   parse_arguments "$@"
   validate_input
+  execute_upload
 }
 
 main "$@"
