@@ -5,9 +5,10 @@ DEFAULT_SERVER="merlin.fit.vutbr.cz"
 LOGIN="xhulejm00"
 
 DATE_TIME="$(date +%Y%m%d_%H%M)"
-DESTINATION="~/Documents/$DATE_TIME"
+DST_PATH="~/Documents/$DATE_TIME"
 
 SERVER="$DEFAULT_SERVER"
+SRC_PATH=""
 FILE_TO_UPLOAD=""
 UPLOAD_DIR=false
 
@@ -68,7 +69,7 @@ parse_arguments() {
         exit 1
       fi
 
-      DESTINATION="$2"
+      DST_PATH="$2"
       shift 2
       ;;
     *)
@@ -79,8 +80,32 @@ parse_arguments() {
   done
 }
 
+validate_input() {
+  # Directory upload
+  if [ "$UPLOAD_DIR" = true ]; then
+    SRC_PATH=$(pwd)
+  # File upload
+  else
+    if [ -z "$FILE_TO_UPLOAD" ]; then
+      printf "Error: Nothing to upload." >&2
+      show_help
+      exit 1
+    fi
+
+    SRC_PATH="$(pwd)/${FILE_TO_UPLOAD}"
+
+    if [ ! -e "$SRC_PATH" ]; then
+      printf "Error: File %s does not exist in current directory" "$FILE_TO_UPLOAD" >&2
+      exit 1
+    elif [ -d "$SRC_PATH" ]; then
+      printf "Error: %s is a directory. Use -d to upload directory." "$FILE_TO_UPLOAD" >&2
+    fi
+  fi
+}
+
 main() {
   parse_arguments "$@"
+  validate_input
 }
 
 main "$@"
