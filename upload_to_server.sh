@@ -128,6 +128,34 @@ validate_input() {
         SRC_PATHS+=("$current_path")
       done
     fi
+
+  # --- Download mode ---
+  else
+    if [ ${#FILES_TO_UPLOAD[@]} -eq 0 ]; then
+      printf "Error: Nothing to download. Specify remote files/directories using -f.\n" >&2
+      exit 1
+    fi
+
+    for file in "${FILES_TO_UPLOAD[@]}"; do
+      local target_name="$(basename "$file")"
+      local dst_file="${DST_PATH}/${target_name}"
+
+      if [ -e "$dst_file" ]; then
+        # Confirmation to overwrite if 'target_name' already exists in '$DST_PATH'
+        read -p "Warning: '$target_name' already exists in '$DST_PATH'. Overwrite? [y/N]: " confirm
+        if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+          printf "Download aborted.\n" >&2
+          exit 1
+        fi
+      fi
+
+      if [[ "$SERVER" == *"fit.vutbr.cz" ]] && [[ "$file" == "$HOME"* ]]; then
+        # In case local bash use '~' into -f path
+        SRC_PATHS+=(".${file#$HOME}")
+      else
+        SRC_PATHS+=("$file")
+      fi
+    done
   fi
 }
 
