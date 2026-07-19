@@ -1,0 +1,15 @@
+# Stop searching for .editorconfig files in parent directories
+root = true
+
+# Apply these settings to all files
+[*]
+indent_style = space
+indent_size = 2
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Makefiles MUST use tabs, overriding the default space rule
+[{Makefile,*.mk}]
+indent_style = tab
