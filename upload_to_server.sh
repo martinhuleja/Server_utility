@@ -95,35 +95,39 @@ parse_arguments() {
 }
 
 validate_input() {
-  if [[ "$SERVER" == "merlin.fit.vutbr.cz" || "$SERVER" == "eva.fit.vutbr.cz" ]]; then
-    if [[ "$DST_PATH" == "$HOME"* ]]; then
-      DST_PATH=".${DST_PATH#$HOME}"
-    fi
-  fi
-
-  # Directory upload
-  if [ "$UPLOAD_DIR" = true ]; then
-    SRC_PATHS=($(pwd))
-  # Files upload
-  else
-    if [ ${#FILES_TO_UPLOAD[@]} -eq 0 ]; then
-      printf "Error: Nothing to upload.\n" >&2
-      show_help
-      exit 1
+  # --- Upload mode ---
+  if [ "$MODE" == "upload" ]; then
+    if [[ "$SERVER" == "merlin.fit.vutbr.cz" || "$SERVER" == "eva.fit.vutbr.cz" ]]; then
+      if [[ "$DST_PATH" == "$HOME"* ]]; then
+        DST_PATH=".${DST_PATH#$HOME}"
+      fi
     fi
 
-    for file in "${FILES_TO_UPLOAD[@]}"; do
-      local current_path="$(pwd)/${file}"
+    # Directory upload
+    if [ "$UPLOAD_DIR" = true ]; then
+      SRC_PATHS=($(pwd))
+    fi
 
-      if [ ! -e "$current_path" ]; then
-        printf "Error: File %s does not exist in current directory.\n" "$file" >&2
+    # Files upload
+    else
+      if [ ${#FILES_TO_UPLOAD[@]} -eq 0 ]; then
+        printf "Error: Nothing to upload. Use -h to show help message.\n" >&2
         exit 1
-      elif [ -d "$current_path" ]; then
-        printf "Error: %s is a directory. Use -d to upload directory.\n" "$file" >&2
       fi
 
-      SRC_PATHS+=("$current_path")
-    done
+      for file in "${FILES_TO_UPLOAD[@]}"; do
+        local current_path="$(pwd)/${file}"
+
+        if [ ! -e "$current_path" ]; then
+          printf "Error: File %s does not exist in current directory.\n" "$file" >&2
+          exit 1
+        elif [ -d "$current_path" ]; then
+          printf "Error: %s is a directory. Use -d to upload directory.\n" "$file" >&2
+          exit 1
+        fi
+        SRC_PATHS+=("$current_path")
+      done
+    fi
   fi
 }
 
