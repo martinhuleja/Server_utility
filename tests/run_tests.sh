@@ -102,6 +102,7 @@ run_test "Download val: Overwrite ABORTED (n)" 1 "n" "-get" "-f" "existing_local
 run_test "Download val: Overwrite CONFIRMED (y)" 0 "y" "-get" "-f" "existing_local.txt"
 run_test "Download val: Overwrite CONFIRMED (Y)" 0 "Y" "-get" "-f" "existing_local.txt"
 run_test "Download val: Valid remote file" 0 "" "-get" "-f" "remote_file.txt"
+run_test "Download val: Multiple directories (-d)" 0 "" "-get" "-d" "remote_dir1" "remote_dir2"
 run_test "Download val: FIT server + \$HOME expansion in -f" 0 "" "-get" "-s" "merlin" "-f" "$HOME/remote_file.txt"
 
 # --- 4. TRANSFER EXECUTION (UPLOAD) ---
