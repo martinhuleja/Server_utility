@@ -146,16 +146,18 @@ validate_input() {
 
   # --- Download mode ---
   else
-    if [ ${#FILES_TO_UPLOAD[@]} -eq 0 ]; then
-      printf "Error: Nothing to download. Specify remote files/directories using -f.\n" >&2
+    local all_remote_items=("${FILES_TO_UPLOAD[@]}" "${DIRS_TO_UPLOAD[@]}")
+
+    if [ ${#all_remote_items[@]} -eq 0 ]; then
+      printf "Error: Nothing to download. Specify remote files or directories using -f or -d.\n" >&2
       exit 1
     fi
 
-    for file in "${FILES_TO_UPLOAD[@]}"; do
-      local target_name="$(basename "$file")"
-      local dst_file="${DST_PATH}/${target_name}"
+    for item in "${all_remote_items[@]}"; do
+      local target_name="$(basename "$item")"
+      local dst_item="${DST_PATH}/${target_name}"
 
-      if [ -e "$dst_file" ]; then
+      if [ -e "$dst_item" ]; then
         # Confirmation to overwrite if 'target_name' already exists in '$DST_PATH'
         read -p "Warning: '$target_name' already exists in '$DST_PATH'. Overwrite? [y/N]: " confirm
         if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
@@ -164,11 +166,11 @@ validate_input() {
         fi
       fi
 
-      if [[ "$SERVER" == *"fit.vutbr.cz" ]] && [[ "$file" == "$HOME"* ]]; then
+      if [[ "$SERVER" == *"fit.vutbr.cz" ]] && [[ "$item" == "$HOME"* ]]; then
         # In case local bash use '~' into -f path
-        SRC_PATHS+=(".${file#$HOME}")
+        SRC_PATHS+=(".${item#$HOME}")
       else
-        SRC_PATHS+=("$file")
+        SRC_PATHS+=("$item")
       fi
     done
   fi
