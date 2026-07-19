@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # --- GLOBAL DEFAULT VALUES ---
-DEFAULT_SERVER="merlin.fit.vutbr.cz"
+DEFAULT_SERVER="eva.fit.vutbr.cz"
 LOGIN="xhulejm00"
 
 DATE_TIME="$(date +%Y%m%d_%H%M)"
@@ -18,14 +18,14 @@ show_help() {
   printf "Options:\n"
   printf "  -h, --help                   Show this help message\n"
   printf "  -s, --server <server>        Server to use (default: %s)\n" "$DEFAULT_SERVER"
-  printf "                               Use '-s eva' for eva.fit.vutbr.cz\n"
+  printf "                               Use '-s merlin' for merlin.fit.vutbr.cz\n"
   printf "  -f, --file <file>...         Upload specific file (or multiple files) from current directory\n"
   printf "  -d, -r, --directory          Upload current directory\n"
   printf "  -dst, --destination <path>   Destination folder on the server\n"
   printf "                               (default: ~/Documents/YYYYMMDD_hhmm)\n\n"
   printf "Examples:\n"
   printf "  %s -f main.c Makefile\n" "$0"
-  printf "  %s --directory -s eva\n\n" "$0"
+  printf "  %s --directory -s merlin\n\n" "$0"
   printf "Set default values in the begginning of the script!\n"
 }
 
@@ -47,6 +47,8 @@ parse_arguments() {
         exit 1
       elif [[ "$2" == "eva" ]]; then
         SERVER="eva.fit.vutbr.cz"
+      elif [[ "$2" == "merlin" ]]; then
+        SERVER="merlin.fit.vutbr.cz"
       elif [[ -n "$2" && "$2" != -* ]]; then
         SERVER="$2"
       fi
