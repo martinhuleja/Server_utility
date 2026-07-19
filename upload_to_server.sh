@@ -106,7 +106,6 @@ validate_input() {
     # Directory upload
     if [ "$UPLOAD_DIR" = true ]; then
       SRC_PATHS=($(pwd))
-    fi
 
     # Files upload
     else
@@ -184,13 +183,39 @@ execute_transfer() {
     fi
 
     printf "\nSuccessfully uploaded to: %s@%s: %s\n" "$LOGIN" "$SERVER" "${DST_PATH#.}"
+
+  # --- Download mode ---
+  else
+    printf "Preparing local directory and connecting to %s as %s...\n" "$SERVER" "$LOGIN"
+
+    mkdir -p "$DST_PATH"
+    if [ ! -d "$DST_PATH" ]; then
+      printf "Error: Failed to create local directory '%s'.\n" "$DST_PATH" >&2
+      exit 1
+    fi
+
+    printf "Local directory '%s' created.\n" "$DST_PATH"
+    printf "Transfering data from server...\n\n"
+
+    local scp_sources=()
+    for src in "${SRC_PATHS[@]}"; do
+      scp_sources+=("${target}:${src}")
+    done
+
+    scp -r "${scp_sources[@]}" "${DST_PATH}/"
+    if [ $? -ne 0 ]; then
+      printf "Error: Data transfer failed.\n" >&2
+      exit 1
+    fi
+
+    printf "\nSuccessfully downloaded to: %s\n" "$DST_PATH"
   fi
 }
 
 main() {
   parse_arguments "$@"
   validate_input
-  execute_upload
+  execute_transfer
 }
 
 main "$@"
