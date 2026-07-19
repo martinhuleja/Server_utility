@@ -13,7 +13,7 @@ You can upload a file or whole folder.
 - `-h, --help`: Show help message
 - `-s, --server <server>`: Server to use
   - *Note: Default server is `merlin.fit.vutbr.cz`. Use `-s eva` for `eva.fit.vutbr.cz`.*
-- `-f, --file <file>`: Upload specific file from current directory
+- `-f, --file <file>...`: Upload specific file (or multiple files) from current directory
 - `-d, -r, -directory`: Upload current folder
 - `-dst, --destination <path>`: Destionation folder on server
   - *Default: `~/Documents/<YYYYMMDD_hhmm>`*
