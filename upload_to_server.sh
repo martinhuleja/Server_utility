@@ -31,8 +31,7 @@ show_help() {
 
 parse_arguments() {
   if [ $# -eq 0 ]; then
-    printf "Error: No parameters provided.\n" >&2
-    show_help
+    printf "Error: No parameters provided. Use -h to sohw help message.\n" >&2
     exit 1
   fi
 
@@ -43,7 +42,10 @@ parse_arguments() {
       exit 0
       ;;
     -s | --server)
-      if [[ "$2" == "eva" ]]; then
+      if [[ -z "$2" || "$2" == -* ]]; then
+        printf "Error: Option %s requires a server name.\n" "$1" >&2
+        exit 1
+      elif [[ "$2" == "eva" ]]; then
         SERVER="eva.fit.vutbr.cz"
       elif [[ -n "$2" && "$2" != -* ]]; then
         SERVER="$2"
@@ -51,9 +53,10 @@ parse_arguments() {
       shift 2
       ;;
     -f | --file)
+      opt_name="$1"
       shift
       if [[ -z "$1" || "$1" == -* ]]; then
-        printf "Error: Option -f, --file requires a file name.\n" >&2
+        printf "Error: Option %s requires a file name.\n" "$opt_name" >&2
         exit 1
       fi
       while [[ -n "$1" && "$1" != -* ]]; do
@@ -66,9 +69,11 @@ parse_arguments() {
       shift
       ;;
     -dst | --destination)
-      if [[ -n "$2" && "$2" != -* ]]; then
-        DST_PATH="$2"
+      if [[ -z "$2" || "$2" == -* ]]; then
+        printf "Error: Option %s requires a destination path.\n" "$1" >&2
+        exit 1
       fi
+      DST_PATH="$2"
       shift 2
       ;;
     *)
