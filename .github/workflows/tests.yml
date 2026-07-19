@@ -1,6 +1,14 @@
-name: Bash Script Tests
+name: Server Utility Tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
 
 jobs:
   test:
