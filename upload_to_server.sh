@@ -81,6 +81,12 @@ parse_arguments() {
 }
 
 validate_input() {
+  if [[ "$SERVER" == "merlin.fit.vutbr.cz" || "$SERVER" == "eva.fit.vutbr.cz" ]]; then
+    if [[ "$DST_PATH" == "$HOME"* ]]; then
+      DST_PATH=".${DST_PATH#$HOME}"
+    fi
+  fi
+
   # Directory upload
   if [ "$UPLOAD_DIR" = true ]; then
     SRC_PATH=$(pwd)
