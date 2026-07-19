@@ -4,7 +4,7 @@ show_help() {
   printf -- "----- UPLOAD TO SERVER UTILITY -----\n"
   printf "> User Guide\n\n"
   printf "Options:\n"
-  printf "  -h, --help\n"
+  printf "  -h, --help                   Show this help message\n"
   printf "  -s, --server <server>        Server to use (default: merlin.fit.vutbr.cz)\n"
   printf "                               Use '-s eva' for eva.fit.vutbr.cz\n"
   printf "  -f, --file <file>            Upload specific file from current directory\n"
