@@ -8,6 +8,7 @@ DATE_TIME="$(date +%Y%m%d_%H%M)"
 DST_PATH="~/Documents/$DATE_TIME"
 
 SERVER="$DEFAULT_SERVER"
+MODE="upload"
 SRC_PATHS=()
 FILES_TO_UPLOAD=()
 UPLOAD_DIR=false
@@ -23,9 +24,11 @@ show_help() {
   printf "  -d, -r, --directory          Upload current directory\n"
   printf "  -dst, --destination <path>   Destination folder on the server\n"
   printf "                               (default: ~/Documents/YYYYMMDD_hhmm)\n\n"
+  printf "  -get, -dl, --download        Switch to download mode.\n"
   printf "Examples:\n"
   printf "  %s -f main.c Makefile\n" "$0"
-  printf "  %s --directory -s merlin\n\n" "$0"
+  printf "  %s --directory -s merlin\n" "$0"
+  printf "  %s --download -f ~/Documents/main.c -dst .\n\n" "$0"
   printf "Set default values in the begginning of the script!\n"
 }
 
@@ -40,6 +43,11 @@ parse_arguments() {
     -h | --help)
       show_help
       exit 0
+      ;;
+    -get | -dl | --download)
+      MODE="download"
+      DST_PATH="."
+      shift
       ;;
     -s | --server)
       if [[ -z "$2" || "$2" == -* ]]; then
