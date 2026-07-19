@@ -11,6 +11,7 @@ SERVER="$DEFAULT_SERVER"
 MODE="upload"
 SRC_PATHS=()
 FILES_TO_UPLOAD=()
+DIRS_TO_UPLOAD=()
 UPLOAD_DIR=false
 
 show_help() {
@@ -77,6 +78,10 @@ parse_arguments() {
     -d | -r | --directory)
       UPLOAD_DIR=true
       shift
+      while [[ -n "$1" && "$1" != -* ]]; do
+        DIRS_TO_UPLOAD+=("$1")
+        shift
+      done
       ;;
     -dst | --destination)
       if [[ -z "$2" || "$2" == -* ]]; then
@@ -105,7 +110,18 @@ validate_input() {
 
     # Directory upload
     if [ "$UPLOAD_DIR" = true ]; then
-      SRC_PATHS=($(pwd))
+      if [ ${#DIRS_TO_UPLOAD[@]} -eq 0 ]; then
+        SRC_PATHS=($(pwd))
+      else
+        for dir in "${DIRS_TO_UPLOAD[@]}"; do
+          local current_path="$(pwd)/${dir}"
+          if [ ! -d "$current_path" ]; then
+            printf "Error: Directory '%s does not exist.\n" "$dir" >&2
+            exit 1
+          fi
+          SRC_PATHS+=("$current_path")
+        done
+      fi
 
     # Files upload
     else
