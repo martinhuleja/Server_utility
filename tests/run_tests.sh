@@ -57,6 +57,7 @@ setup_env
 touch "$SANDBOX_DIR/test_file.txt"
 touch "$SANDBOX_DIR/test_file2.txt"
 mkdir -p "$SANDBOX_DIR/test_dir"
+mkdir -p "$SANDBOX_DIR/test_dir2"
 touch "$SANDBOX_DIR/existing_local.txt"
 touch "$SANDBOX_DIR/fail_dir" # Dummy file to test mkdir failure
 
@@ -90,7 +91,9 @@ run_test "Upload val: No files" 1 "" "-s" "eva"
 run_test "Upload val: File does not exist" 1 "" "-f" "nonexistent.txt"
 run_test "Upload val: Target is a directory without -d" 1 "" "-f" "test_dir"
 run_test "Upload val: Valid file" 0 "" "-f" "test_file.txt"
-run_test "Upload val: Valid directory" 0 "" "-d"
+run_test "Upload val: Directory default (pwd)" 0 "" "-d"
+run_test "Upload val: Multiple valid directories" 0 "" "-d" "test_dir" "test_dir2"
+run_test "Upload val: One invalid directory" 1 "" "-d" "test_dir" "nonexistent_dir"
 run_test "Upload val: FIT server + \$HOME expansion in -dst" 0 "" "-s" "eva" "-dst" "$HOME/Documents/test" "-f" "test_file.txt"
 
 # --- 3. INPUT VALIDATION (DOWNLOAD) ---
