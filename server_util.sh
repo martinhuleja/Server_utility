@@ -14,6 +14,7 @@ FILES_TO_UPLOAD=()
 DIRS_TO_UPLOAD=()
 UPLOAD_DIR=false
 
+# ----- HELP MESSAGE -----
 show_help() {
   printf -- "----- UPLOAD TO SERVER UTILITY -----\n"
   printf "> User Guide\n\n"
@@ -33,6 +34,7 @@ show_help() {
   printf "Set default values in the begginning of the script!\n"
 }
 
+# ----- PARSE ARGUMENTS -----
 parse_arguments() {
   if [ $# -eq 0 ]; then
     printf "Error: No parameters provided. Use -h to sohw help message.\n" >&2
@@ -99,80 +101,101 @@ parse_arguments() {
   done
 }
 
-validate_input() {
-  # --- Upload mode ---
-  if [ "$MODE" == "upload" ]; then
-    if [[ "$SERVER" == "merlin.fit.vutbr.cz" || "$SERVER" == "eva.fit.vutbr.cz" ]]; then
-      if [[ "$DST_PATH" == "$HOME"* ]]; then
-        DST_PATH=".${DST_PATH#$HOME}"
-      fi
+# ----- VALIDATE UPLOAD -----
+validate_upload() {
+  normalize_dst_path
+
+  if [ "$UPLOAD_DIR" = true ]; then
+    validate_upload_dirs
+  else
+    validate_upload_files
+  fi
+}
+
+normalize_dst_path() {
+  if [[ "$SERVER" == "merlin.fit.vutbr.cz" || "$SERVER" == "eva.fit.vutbr.cz" ]]; then
+    if [[ "$DST_PATH" == "$HOME"* ]]; then
+      DST_PATH=".${DST_PATH#$HOME}"
     fi
+  fi
+}
 
-    # Directory upload
-    if [ "$UPLOAD_DIR" = true ]; then
-      if [ ${#DIRS_TO_UPLOAD[@]} -eq 0 ]; then
-        SRC_PATHS=($(pwd))
-      else
-        for dir in "${DIRS_TO_UPLOAD[@]}"; do
-          local current_path="$(pwd)/${dir}"
-          if [ ! -d "$current_path" ]; then
-            printf "Error: Directory '%s does not exist.\n" "$dir" >&2
-            exit 1
-          fi
-          SRC_PATHS+=("$current_path")
-        done
-      fi
-
-    # Files upload
-    else
-      if [ ${#FILES_TO_UPLOAD[@]} -eq 0 ]; then
-        printf "Error: Nothing to upload. Use -h to show help message.\n" >&2
+validate_upload_dirs() {
+  if [ ${#DIRS_TO_UPLOAD[@]} -eq 0 ]; then
+    SRC_PATHS=("$(pwd)")
+  else
+    for dir in "${DIRS_TO_UPLOAD[@]}"; do
+      local current_path="$(pwd)/${dir}"
+      if [ ! -d "$current_path" ]; then
+        printf "Error: Directory '%s does not exist.\n" "$dir" >&2
         exit 1
       fi
+      SRC_PATHS+=("$current_path")
+    done
+  fi
+}
 
-      for file in "${FILES_TO_UPLOAD[@]}"; do
-        local current_path="$(pwd)/${file}"
+validate_upload_files() {
+  if [ ${#FILES_TO_UPLOAD[@]} -eq 0 ]; then
+    printf "Error: Nothing to upload. Use -h to show help message.\n" >&2
+    exit 1
+  fi
 
-        if [ ! -e "$current_path" ]; then
-          printf "Error: File %s does not exist in current directory.\n" "$file" >&2
-          exit 1
-        elif [ -d "$current_path" ]; then
-          printf "Error: %s is a directory. Use -d to upload directory.\n" "$file" >&2
-          exit 1
-        fi
-        SRC_PATHS+=("$current_path")
-      done
-    fi
+  for file in "${FILES_TO_UPLOAD[@]}"; do
+    local current_path="$(pwd)/${file}"
 
-  # --- Download mode ---
-  else
-    local all_remote_items=("${FILES_TO_UPLOAD[@]}" "${DIRS_TO_UPLOAD[@]}")
-
-    if [ ${#all_remote_items[@]} -eq 0 ]; then
-      printf "Error: Nothing to download. Specify remote files or directories using -f or -d.\n" >&2
+    if [ ! -e "$current_path" ]; then
+      printf "Error: File %s does not exist in current directory.\n" "$file" >&2
+      exit 1
+    elif [ -d "$current_path" ]; then
+      printf "Error: %s is a directory. Use -d to upload directory.\n" "$file" >&2
       exit 1
     fi
+    SRC_PATHS+=("$current_path")
+  done
+}
 
-    for item in "${all_remote_items[@]}"; do
-      local target_name="$(basename "$item")"
-      local dst_item="${DST_PATH}/${target_name}"
+# ----- VALIDATE DOWNLOAD -----
+validate_download() {
+  local all_remote_items=("${FILES_TO_UPLOAD[@]}" "${DIRS_TO_UPLOAD[@]}")
+  ensure_items_to_download
 
-      if [ -e "$dst_item" ]; then
-        # Confirmation to overwrite if 'target_name' already exists in '$DST_PATH'
-        read -p "Warning: '$target_name' already exists in '$DST_PATH'. Overwrite? [y/N]: " confirm
-        if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-          printf "Download aborted.\n" >&2
-          exit 1
-        fi
-      fi
+  for item in "${all_remote_items[@]}"; do
+    check_local_overwrite "$item"
+    normalize_src_path "$item"
+  done
+}
 
-      if [[ "$SERVER" == *"fit.vutbr.cz" ]] && [[ "$item" == "$HOME"* ]]; then
-        # In case local bash use '~' into -f path
-        SRC_PATHS+=(".${item#$HOME}")
-      else
-        SRC_PATHS+=("$item")
-      fi
-    done
+ensure_items_to_download() {
+  local all_remote_items=("${FILES_TO_UPLOAD[@]}" "${DIRS_TO_UPLOAD[@]}")
+  if [ ${#all_remote_items[@]} -eq 0 ]; then
+    printf "Error: Nothing to download. Specify remote files or directories using -f or -d.\n" >&2
+    exit 1
+  fi
+}
+
+check_local_overwrite() {
+  local target_name="$(basename "$1")"
+  local dst_item="${DST_PATH}/${target_name}"
+
+  if [ -e "$dst_item" ]; then
+    # Confirmation to overwrite if 'target_name' already exists in '$DST_PATH'
+    read -p "Warning: '$target_name' already exists in '$DST_PATH'. Overwrite? [y/N]: " confirm
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+      printf "Download aborted.\n" >&2
+      exit 1
+    fi
+  fi
+}
+
+normalize_src_path() {
+  local item="$1"
+
+  if [[ "$SERVER" == *"fit.vutbr.cz" ]] && [[ "$item" == "$HOME"* ]]; then
+    # In case local bash use '~' into -f path
+    SRC_PATHS+=(".${item#$HOME}")
+  else
+    SRC_PATHS+=("$item")
   fi
 }
 
@@ -232,8 +255,17 @@ execute_transfer() {
 
 main() {
   parse_arguments "$@"
-  validate_input
-  execute_transfer
+
+  if [ "$MODE" == "upload" ]; then
+    # --- Upload mode ---
+    validate_upload
+    execute_transfer
+
+  else
+    # --- Download mode ---
+    validate_download
+    execute_transfer
+  fi
 }
 
 main "$@"
