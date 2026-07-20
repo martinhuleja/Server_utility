@@ -119,7 +119,7 @@ validate_upload() {
 normalize_dst_path() {
   if [[ "$SERVER" == *"fit.vutbr.cz" ]]; then
     if [[ "$DST_PATH" == "$HOME"* ]]; then
-      DST_PATH=".${DST_PATH#$HOME}"
+      DST_PATH="~${DST_PATH#$HOME}"
     fi
   fi
 }
@@ -197,7 +197,7 @@ normalize_src_path() {
 
   if [[ "$SERVER" == *"fit.vutbr.cz" ]] && [[ "$item" == "$HOME"* ]]; then
     # In case local bash use '~' into -f path
-    SRC_PATHS+=(".${item#$HOME}")
+    SRC_PATHS+=("~${item#$HOME}")
   else
     SRC_PATHS+=("$item")
   fi
@@ -214,7 +214,7 @@ create_remote_dir() {
     exit 1
   fi
 
-  printf "Directory %s created.\n" "${DST_PATH#.}"
+  printf "Directory %s created.\n" "${DST_PATH}"
 }
 
 upload_data() {
@@ -227,7 +227,7 @@ upload_data() {
     exit 1
   fi
 
-  printf "\nSuccessfully uploaded to: %s@%s: %s\n" "$LOGIN" "$SERVER" "${DST_PATH#.}"
+  printf "\nSuccessfully uploaded to: %s@%s: %s\n" "$LOGIN" "$SERVER" "${DST_PATH}"
 }
 
 # ----- EXECUTE DOWNLOAD -----
