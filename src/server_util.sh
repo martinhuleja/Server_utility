@@ -117,7 +117,7 @@ validate_upload() {
 }
 
 normalize_dst_path() {
-  if [[ "$SERVER" == "merlin.fit.vutbr.cz" || "$SERVER" == "eva.fit.vutbr.cz" ]]; then
+  if [[ "$SERVER" == *"fit.vutbr.cz" ]]; then
     if [[ "$DST_PATH" == "$HOME"* ]]; then
       DST_PATH=".${DST_PATH#$HOME}"
     fi
