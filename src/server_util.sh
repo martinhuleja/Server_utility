@@ -232,15 +232,20 @@ upload_data() {
 
 # ----- EXECUTE DOWNLOAD -----
 create_local_dir() {
-  printf "Creating local directory '%s'...\n" "$DST_PATH"
+  if [ "$DST_PATH" != "." ]; then
+    # Check if dir doesn't already exists
+    if [ ! -d "$DST_PATH" ]; then
+      mkdir -p "$DST_PATH"
 
-  mkdir -p "$DST_PATH"
-  if [ ! -d "$DST_PATH" ]; then
-    printf "Error: Failed to create local directory '%s'.\n" "$DST_PATH" >&2
-    exit 1
+      # Check if dir was created
+      if [ ! -d "$DST_PATH" ]; then
+        printf "Error: Failed to create local directory '%s'.\n" "$DST_PATH" >&2
+        exit 1
+      fi
+
+      printf "Created local directory '%s'.\n" "$DST_PATH"
+    fi
   fi
-
-  printf "Local directory created.\n" "$DST_PATH"
 }
 
 download_data() {
@@ -259,7 +264,12 @@ download_data() {
     exit 1
   fi
 
-  printf "\nSuccessfully downloaded to: %s\n" "$DST_PATH"
+  local display_path="$DST_PATH"
+  if [ "$display_path" == "." ]; then
+    display_path="$(pwd)"
+  fi
+
+  printf "\nSuccessfully downloaded to: %s\n" "$display_path"
 }
 
 # ----- MAIN -----
