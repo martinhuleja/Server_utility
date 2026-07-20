@@ -2,7 +2,7 @@
 
 # --- GLOBAL DEFAULT VALUES ---
 DEFAULT_SERVER="eva.fit.vutbr.cz"
-LOGIN="xhulejm00"
+LOGIN="username"
 
 DATE_TIME="$(date +%Y%m%d_%H%M)"
 DST_PATH="~/Documents/$DATE_TIME"
@@ -17,11 +17,11 @@ show_help() {
   printf "> User Guide\n\n"
   printf "Options:\n"
   printf "  -h, --help                   Show this help message\n"
-  printf "  -s, --server <server>        Server to use (default: %s)\n" "$DEFAULT_SERVER"
+  printf "  -f, --file <file>...         Upload specific file(s) from current directory\n"
+  printf "  -d, -r, --directory          Upload the entire current directory\n"
+  printf "  -s, --server <server>        Specify the target server (default: %s)\n" "$DEFAULT_SERVER"
   printf "                               Use '-s merlin' for merlin.fit.vutbr.cz\n"
-  printf "  -f, --file <file>...         Upload specific file (or multiple files) from current directory\n"
-  printf "  -d, -r, --directory          Upload current directory\n"
-  printf "  -dst, --destination <path>   Destination folder on the server\n"
+  printf "  -dst, --destination <path>   Specify the destination folder on the server\n"
   printf "                               (default: ~/Documents/YYYYMMDD_hhmm)\n\n"
   printf "Examples:\n"
   printf "  %s -f main.c Makefile\n" "$0"

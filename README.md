@@ -1,21 +1,65 @@
-# Upload to server utility
+# Upload to Server Utility
 
-Script `upload_to_server.sh` uploads a file or a folder to a server via `ssh`. Simplifies the process and saves time.
+A Bash script designed to upload files and directories to a remote server.
+It automatically handles the creation of destination directories on the remote server via `ssh` and securely transfers the selected data using `scp`.
+
+While it features FIT BUT servers (`eva` and `merlin`), it is fully compatible with any standard SSH server.
 
 ## Setup
 
-Download `upload_to_server.sh` and use `chmod +x upload_to_server.sh`.
+1. **Configure your credentials:**
+   Open the `src/server_util.sh` script in your text editor and set your default values at the top of the file.
+   **You must set the `LOGIN` variable** for the script to work properly:
+   
+   ```bash
+   # --- GLOBAL DEFAULT VALUES ---
+   DEFAULT_SERVER="eva.fit.vutbr.cz"
+   LOGIN="username" # e.g. xlogin00
+   ```
 
-## How to use it
+2. **Install the script:** 
+   Move the script to your local binaries directory and make it executable.
 
-You can upload a file or whole folder.
+   ```bash
+   mkdir -p ~/.local/bin
+   mv src/server_util.sh ~/.local/bin/server_util
+   chmod +x ~/.local/bin/server_util
+   ```
 
-- `-h, --help`: Show help message
-- `-s, --server <server>`: Server to use
-  - *Note: Default server is `eva.fit.vutbr.cz`. Use `-s merlin` for `merlin.fit.vutbr.cz`.*
-- `-f, --file <file>...`: Upload specific file (or multiple files) from current directory
-- `-d, -r, -directory`: Upload current folder
-- `-dst, --destination <path>`: Destionation folder on server
-  - *Default: `~/Documents/<YYYYMMDD_hhmm>`*
+## Usage
 
-**Set default values in the begginning of the script!**
+Since the script is installed in your `~/.local/bin`, you can execute it directly from any directory:
+
+```bash
+server_util <OPTION>...
+```
+
+### Options
+
+| Flag                           | Description                                                                                         |
+| ---                            | ---                                                                                                 |
+| `-h`, `--help`                 | Show the help message.                                                                              |
+| `-f`, `--file <file>...`       | Upload specific file(s) from the current directory.                                                 |
+| `-d`, `-r`, `--directory`      | Upload the entire current directory.                                                                |
+| `-s`, `--server <server>`      | Specify the target server (default: `eva.fit.vutbr.cz`). Use `-s merlin` for `merlin.fit.vutbr.cz`. |
+| `-dst`, `--destination <path>` | Specify the destination folder on the server (default: `~/Documents/YYYYMMDD_HHMM`).                |
+
+### Examples
+
+Upload specific files to default directory on default server.
+
+```bash
+server_util -f main.c Makefile
+```
+
+Upload the entire current directory to `merlin.fit.vutbr.cz`.
+
+```bash
+server_util --directory -s merlin
+```
+
+Upload specific files to a custom server and a specific destination path.
+
+```bash
+server_util -s custom.server.com -dst /var/www/html/ -f index.html styles.css
+```
