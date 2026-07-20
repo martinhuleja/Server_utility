@@ -199,72 +199,80 @@ normalize_src_path() {
   fi
 }
 
-execute_transfer() {
+# ----- EXECUTE UPLOAD -----
+create_remote_dir() {
   local target="$LOGIN@$SERVER"
+  printf "Connecting to %s as %s and creating directory...\n" "$SERVER" "$LOGIN"
 
-  # --- Upload mode ---
-  if [ "$MODE" == "upload" ]; then
-    printf "Connecting to %s as %s and creating directory...\n" "$SERVER" "$LOGIN"
-
-    # Create folder
-    ssh "$target" "mkdir -p $DST_PATH"
-    if [ $? -ne 0 ]; then
-      printf "Error: Failed to create directory on the remote server.\n" >&2
-      exit 1
-    fi
-
-    printf "Directory %s created.\n" "${DST_PATH#.}"
-    printf "Transfering data to server...\n\n"
-
-    # Transfer data
-    scp -r "${SRC_PATHS[@]}" "${target}:${DST_PATH}/"
-    if [ $? -ne 0 ]; then
-      printf "Error: Data transefer failed.\n" >&2
-      exit 1
-    fi
-
-    printf "\nSuccessfully uploaded to: %s@%s: %s\n" "$LOGIN" "$SERVER" "${DST_PATH#.}"
-
-  # --- Download mode ---
-  else
-    printf "Preparing local directory and connecting to %s as %s...\n" "$SERVER" "$LOGIN"
-
-    mkdir -p "$DST_PATH"
-    if [ ! -d "$DST_PATH" ]; then
-      printf "Error: Failed to create local directory '%s'.\n" "$DST_PATH" >&2
-      exit 1
-    fi
-
-    printf "Local directory '%s' created.\n" "$DST_PATH"
-    printf "Transfering data from server...\n\n"
-
-    local scp_sources=()
-    for src in "${SRC_PATHS[@]}"; do
-      scp_sources+=("${target}:${src}")
-    done
-
-    scp -r "${scp_sources[@]}" "${DST_PATH}/"
-    if [ $? -ne 0 ]; then
-      printf "Error: Data transfer failed.\n" >&2
-      exit 1
-    fi
-
-    printf "\nSuccessfully downloaded to: %s\n" "$DST_PATH"
+  ssh "$target" "mkdir -p $DST_PATH"
+  if [ $? -ne 0 ]; then
+    printf "Error: Failed to create directory on the remote server.\n" >&2
+    exit 1
   fi
+
+  printf "Directory %s created.\n" "${DST_PATH#.}"
 }
 
+upload_data() {
+  local target="$LOGIN@$SERVER"
+  printf "Transfering data to server...\n\n"
+
+  scp -r "${SRC_PATHS[@]}" "${target}:${DST_PATH}/"
+  if [ $? -ne 0 ]; then
+    printf "Error: Data transefer failed.\n" >&2
+    exit 1
+  fi
+
+  printf "\nSuccessfully uploaded to: %s@%s: %s\n" "$LOGIN" "$SERVER" "${DST_PATH#.}"
+}
+
+# ----- EXECUTE DOWNLOAD -----
+create_local_dir() {
+  printf "Creating local directory '%s'...\n" "$DST_PATH"
+
+  mkdir -p "$DST_PATH"
+  if [ ! -d "$DST_PATH" ]; then
+    printf "Error: Failed to create local directory '%s'.\n" "$DST_PATH" >&2
+    exit 1
+  fi
+
+  printf "Local directory created.\n" "$DST_PATH"
+}
+
+download_data() {
+  local target="$LOGIN@$SERVER"
+  local scp_sources=()
+
+  for src in "${SRC_PATHS[@]}"; do
+    scp_sources+=("${target}:${src}")
+  done
+
+  printf "Connecting to %s as %s and transfering data from server...\n\n" "$SERVER" "$LOGIN"
+
+  scp -r "${scp_sources[@]}" "${DST_PATH}/"
+  if [ $? -ne 0 ]; then
+    printf "Error: Data transfer failed.\n" >&2
+    exit 1
+  fi
+
+  printf "\nSuccessfully downloaded to: %s\n" "$DST_PATH"
+}
+
+# ----- MAIN -----
 main() {
   parse_arguments "$@"
 
   if [ "$MODE" == "upload" ]; then
     # --- Upload mode ---
     validate_upload
-    execute_transfer
+    create_remote_dir
+    upload_data
 
   else
     # --- Download mode ---
     validate_download
-    execute_transfer
+    create_local_dir
+    download_data
   fi
 }
 
