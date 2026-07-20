@@ -1,17 +1,21 @@
 #!/bin/bash
 
-# --- GLOBAL DEFAULT VALUES ---
+# --- GLOBAL VALUES ---
 DEFAULT_SERVER="eva.fit.vutbr.cz"
+SERVER="$DEFAULT_SERVER"
+
 LOGIN="xhulejm00"
+
+DEFAULT_MODE="upload"
+MODE="$DEFAULT_MODE"
+
+SRC_PATHS=()
+SRC_FILES=()
+SRC_DIRS=()
 
 TIMESTAMP="$(date +%Y%m%d_%H%M)"
 DST_PATH="~/Documents/$TIMESTAMP"
 
-SERVER="$DEFAULT_SERVER"
-MODE="upload"
-SRC_PATHS=()
-SRC_FILES=()
-SRC_DIRS=()
 UPLOAD_DIR=false
 
 # ----- HELP MESSAGE -----
