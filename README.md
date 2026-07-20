@@ -14,8 +14,9 @@ You can upload a file or whole folder.
 - `-s, --server <server>`: Server to use
   - *Note: Default server is `eva.fit.vutbr.cz`. Use `-s merlin` for `merlin.fit.vutbr.cz`.*
 - `-f, --file <file>...`: Upload specific file (or multiple files) from current directory
-- `-d, -r, -directory`: Upload current folder
-- `-dst, --destination <path>`: Destionation folder on server
+- `-r, --dir, --directory`: Upload current folder
+- `--dst, --destination <path>`: Destionation folder on server
   - *Default: `~/Documents/<YYYYMMDD_hhmm>`*
+- `--get, --dl, --download`: Switch to download mode
 
 **Set default values in the begginning of the script!**

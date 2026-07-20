@@ -27,10 +27,10 @@ show_help() {
   printf "  -s, --server <server>        Server to use (default: %s)\n" "$DEFAULT_SERVER"
   printf "                               Use '-s merlin' for merlin.fit.vutbr.cz\n"
   printf "  -f, --file <file>...         Upload specific file (or multiple files) from current directory\n"
-  printf "  -d, -r, --directory          Upload current directory\n"
-  printf "  -dst, --destination <path>   Destination folder on the server\n"
+  printf "  -r, --dir, --directory       Upload current directory\n"
+  printf "  --dst, --destination <path>  Destination folder on the server\n"
   printf "                               (default: ~/Documents/YYYYMMDD_hhmm)\n\n"
-  printf "  -get, -dl, --download        Switch to download mode.\n"
+  printf "  --get, --dl, --download      Switch to download mode.\n"
   printf "Examples:\n"
   printf "  %s -f main.c Makefile\n" "$0"
   printf "  %s --directory -s merlin\n" "$0"
@@ -51,7 +51,7 @@ parse_arguments() {
       show_help
       exit 0
       ;;
-    -get | -dl | --download)
+    --get | --dl | --download)
       MODE="download"
       DST_PATH="."
       shift
@@ -81,7 +81,7 @@ parse_arguments() {
         shift
       done
       ;;
-    -d | -r | --directory)
+    -r | --dir | --directory)
       UPLOAD_DIR=true
       shift
       while [[ -n "$1" && "$1" != -* ]]; do
@@ -89,7 +89,7 @@ parse_arguments() {
         shift
       done
       ;;
-    -dst | --destination)
+    --dst | --destination)
       if [[ -z "$2" || "$2" == -* ]]; then
         printf "Error: Option %s requires a destination path.\n" "$1" >&2
         exit 1
