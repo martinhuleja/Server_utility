@@ -19,7 +19,7 @@ jobs:
 
       - name: Make scripts executable
         run: |
-          chmod +x server_util.sh
+          chmod +x src/server_util.sh
           chmod +x tests/run_tests.sh
 
       - name: Run tests

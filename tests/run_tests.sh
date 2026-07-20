@@ -1,6 +1,7 @@
 #!/bin/bash
 
-TARGET_SCRIPT="$(pwd)/server_util.sh"
+TESTS_DIR="$(cd "$(dirname "$0")" && pwd)"
+TARGET_SCRIPT="$TESTS_DIR/../src/server_util.sh"
 MOCKS_DIR="$(pwd)/tests/mocks"
 SANDBOX_DIR="$(pwd)/tests/sandbox"
 
