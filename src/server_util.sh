@@ -4,14 +4,14 @@
 DEFAULT_SERVER="eva.fit.vutbr.cz"
 LOGIN="xhulejm00"
 
-DATE_TIME="$(date +%Y%m%d_%H%M)"
-DST_PATH="~/Documents/$DATE_TIME"
+TIMESTAMP="$(date +%Y%m%d_%H%M)"
+DST_PATH="~/Documents/$TIMESTAMP"
 
 SERVER="$DEFAULT_SERVER"
 MODE="upload"
 SRC_PATHS=()
-FILES_TO_UPLOAD=()
-DIRS_TO_UPLOAD=()
+SRC_FILES=()
+SRC_DIRS=()
 UPLOAD_DIR=false
 
 # ----- HELP MESSAGE -----
@@ -73,7 +73,7 @@ parse_arguments() {
         exit 1
       fi
       while [[ -n "$1" && "$1" != -* ]]; do
-        FILES_TO_UPLOAD+=("$1")
+        SRC_FILES+=("$1")
         shift
       done
       ;;
@@ -81,7 +81,7 @@ parse_arguments() {
       UPLOAD_DIR=true
       shift
       while [[ -n "$1" && "$1" != -* ]]; do
-        DIRS_TO_UPLOAD+=("$1")
+        SRC_DIRS+=("$1")
         shift
       done
       ;;
@@ -121,10 +121,10 @@ normalize_dst_path() {
 }
 
 validate_upload_dirs() {
-  if [ ${#DIRS_TO_UPLOAD[@]} -eq 0 ]; then
+  if [ ${#SRC_DIRS[@]} -eq 0 ]; then
     SRC_PATHS=("$(pwd)")
   else
-    for dir in "${DIRS_TO_UPLOAD[@]}"; do
+    for dir in "${SRC_DIRS[@]}"; do
       local current_path="$(pwd)/${dir}"
       if [ ! -d "$current_path" ]; then
         printf "Error: Directory '%s does not exist.\n" "$dir" >&2
@@ -136,12 +136,12 @@ validate_upload_dirs() {
 }
 
 validate_upload_files() {
-  if [ ${#FILES_TO_UPLOAD[@]} -eq 0 ]; then
+  if [ ${#SRC_FILES[@]} -eq 0 ]; then
     printf "Error: Nothing to upload. Use -h to show help message.\n" >&2
     exit 1
   fi
 
-  for file in "${FILES_TO_UPLOAD[@]}"; do
+  for file in "${SRC_FILES[@]}"; do
     local current_path="$(pwd)/${file}"
 
     if [ ! -e "$current_path" ]; then
@@ -157,7 +157,7 @@ validate_upload_files() {
 
 # ----- VALIDATE DOWNLOAD -----
 validate_download() {
-  local all_remote_items=("${FILES_TO_UPLOAD[@]}" "${DIRS_TO_UPLOAD[@]}")
+  local all_remote_items=("${SRC_FILES[@]}" "${SRC_DIRS[@]}")
   ensure_items_to_download
 
   for item in "${all_remote_items[@]}"; do
@@ -167,7 +167,7 @@ validate_download() {
 }
 
 ensure_items_to_download() {
-  local all_remote_items=("${FILES_TO_UPLOAD[@]}" "${DIRS_TO_UPLOAD[@]}")
+  local all_remote_items=("${SRC_FILES[@]}" "${SRC_DIRS[@]}")
   if [ ${#all_remote_items[@]} -eq 0 ]; then
     printf "Error: Nothing to download. Specify remote files or directories using -f or -d.\n" >&2
     exit 1
