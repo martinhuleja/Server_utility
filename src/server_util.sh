@@ -23,25 +23,25 @@ show_help() {
   printf -- "----- UPLOAD TO SERVER UTILITY -----\n"
   printf "> User Guide\n\n"
   printf "Options:\n"
-  printf "  -h, --help                   Show this help message\n"
-  printf "  -s, --server <server>        Server to use (default: %s)\n" "$DEFAULT_SERVER"
-  printf "                               Use '-s merlin' for merlin.fit.vutbr.cz\n"
-  printf "  -f, --file <file>...         Upload specific file (or multiple files) from current directory\n"
-  printf "  -r, --dir, --directory       Upload current directory\n"
-  printf "  --dst, --destination <path>  Destination folder on the server\n"
-  printf "                               (default: ~/Documents/YYYYMMDD_hhmm)\n\n"
-  printf "  --get, --dl, --download      Switch to download mode.\n"
+  printf "  -h, --help                       Show this help message\n"
+  printf "  -s, --server <server>            Server to use (default: %s)\n" "$DEFAULT_SERVER"
+  printf "                                     Use '-s merlin' for merlin.fit.vutbr.cz\n"
+  printf "  -f, --file <file>...             Transfer specific file (or multiple files) from current directory\n"
+  printf "  -r, --dir, --directory [dir]...  Transfer current directory / specific directories\n"
+  printf "  --dst, --destination <path>      Destination folder\n"
+  printf "                                     (default on remote server: ~/Documents/YYYYMMDD_hhmm)\n"
+  printf "                                     (default local folder: Current folder)\n"
+  printf "  --get, --dl, --download          Switch to download mode (default: Upload mode)\n\n"
   printf "Examples:\n"
   printf "  %s -f main.c Makefile\n" "$0"
   printf "  %s --directory -s merlin\n" "$0"
-  printf "  %s --download -f ~/Documents/main.c -dst .\n\n" "$0"
-  printf "Set default values in the begginning of the script!\n"
+  printf "  %s --download -f ~/Documents/main.c --dst .\n\n" "$0"
 }
 
 # ----- PARSE ARGUMENTS -----
 parse_arguments() {
   if [ $# -eq 0 ]; then
-    printf "Error: No parameters provided. Use -h to sohw help message.\n" >&2
+    printf "Error: No parameters provided. Use -h to show help message.\n" >&2
     exit 1
   fi
 
@@ -228,7 +228,7 @@ upload_data() {
 
   scp -r "${SRC_PATHS[@]}" "${target}:${DST_PATH}/"
   if [ $? -ne 0 ]; then
-    printf "Error: Data transefer failed.\n" >&2
+    printf "Error: Data transfer failed.\n" >&2
     exit 1
   fi
 
