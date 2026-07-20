@@ -1,4 +1,4 @@
-# Upload to Server Utility
+# Server Utility
 
 A Bash script designed to upload and download files and directories to and from a remote server.
 It automatically handles the creation of destination directories on the remote server via `ssh` and securely transfers the selected data using `scp`.
@@ -10,6 +10,13 @@ While it features convenient shortcuts for FIT BUT servers (`eva` and `merlin`),
 To run this script, your system must have standard OpenSSH tools installed:
 - `ssh` (for remote directory creation and command execution)
 - `scp` (for secure file transfer)
+
+## Compatibility
+
+- **Linux & macOS:** Fully supported out of the box.
+- **Windows:** Supported via Git Bash (included with [Git for Windows](https://gitforwindows.org/)) or **WSL** (Windows Subsystem for Linux).
+
+**The script was tested just on Linux.**
 
 ## Setup
 
