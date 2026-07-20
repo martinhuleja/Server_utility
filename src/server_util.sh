@@ -131,7 +131,7 @@ validate_upload_dirs() {
     for dir in "${SRC_DIRS[@]}"; do
       local current_path="$(pwd)/${dir}"
       if [ ! -d "$current_path" ]; then
-        printf "Error: Directory '%s does not exist.\n" "$dir" >&2
+        printf "Error: Directory '%s' does not exist.\n" "$dir" >&2
         exit 1
       fi
       SRC_PATHS+=("$current_path")
@@ -149,10 +149,10 @@ validate_upload_files() {
     local current_path="$(pwd)/${file}"
 
     if [ ! -e "$current_path" ]; then
-      printf "Error: File %s does not exist in current directory.\n" "$file" >&2
+      printf "Error: File '%s' does not exist in current directory.\n" "$file" >&2
       exit 1
     elif [ -d "$current_path" ]; then
-      printf "Error: %s is a directory. Use -d to upload directory.\n" "$file" >&2
+      printf "Error: '%s' is a directory. Use -d to upload directory.\n" "$file" >&2
       exit 1
     fi
     SRC_PATHS+=("$current_path")
@@ -214,7 +214,7 @@ create_remote_dir() {
     exit 1
   fi
 
-  printf "Directory %s created.\n" "${DST_PATH}"
+  printf "Directory '%s' created.\n" "${DST_PATH}"
 }
 
 upload_data() {
@@ -227,7 +227,7 @@ upload_data() {
     exit 1
   fi
 
-  printf "\nSuccessfully uploaded to: %s@%s: %s\n" "$LOGIN" "$SERVER" "${DST_PATH}"
+  printf "\nSuccessfully uploaded to '%s@%s: %s'.\n" "$LOGIN" "$SERVER" "${DST_PATH}"
 }
 
 # ----- EXECUTE DOWNLOAD -----
@@ -269,7 +269,7 @@ download_data() {
     display_path="$(pwd)"
   fi
 
-  printf "\nSuccessfully downloaded to: %s\n" "$display_path"
+  printf "\nSuccessfully downloaded to '%s'.\n" "$display_path"
 }
 
 # ----- MAIN -----
