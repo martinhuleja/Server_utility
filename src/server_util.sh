@@ -51,6 +51,11 @@ parse_arguments() {
       show_help
       exit 0
       ;;
+    --put | --up | --upload)
+      MODE="upload"
+      DST_PATH="~/Documents/$TIMESTAMP"
+      shift
+      ;;
     --get | --dl | --download)
       MODE="download"
       DST_PATH="."
