@@ -1,4 +1,4 @@
-name: Server Utility Tests
+name: Unit Tests
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
       - name: Make scripts executable
         run: |
           chmod +x src/server_util.sh
-          chmod +x tests/run_tests.sh
+          chmod +x tests/unit_tests.sh
 
       - name: Run tests
-        run: ./tests/run_tests.sh
+        run: ./tests/unit_tests.sh

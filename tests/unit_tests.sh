@@ -62,6 +62,8 @@ mkdir -p "$SANDBOX_DIR/test_dir2"
 touch "$SANDBOX_DIR/existing_local.txt"
 touch "$SANDBOX_DIR/fail_dir" # Dummy file to test mkdir failure
 
+printf -- "----- Server Utility Unit Tests -----\n\n"
+
 # --- 1. ARGUMENT PARSING ---
 run_test "Arg: No arguments" 1 ""
 run_test "Arg: Help flag (-h)" 0 "" "-h"
