@@ -100,3 +100,7 @@ Download specific files from a custom server and to a current local directory.
 ```bash
 server_util --download -s custom.server.com -f index.html styles.css
 ```
+
+## License
+
+This project is distributed under MIT License. See the [LICENSE](LICENSE) file for details.
